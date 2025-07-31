@@ -1,0 +1,144 @@
+{
+  "total": {
+    "prev": {
+      "totalTasks": 77,
+      "totalHours": 1.3
+    },
+    "current": {
+      "totalTasks": 77,
+      "totalHours": 1.3
+    }
+  },
+  "zakazchik": {
+    "prev": {
+      "totalTasks": 52,
+      "totalHours": 0
+    },
+    "current": {
+      "totalTasks": 52,
+      "totalHours": 0
+    }
+  },
+  "categoryComparison": {
+    "code64": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "modification": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "new": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "not available": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "old": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "patch": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "postanovka": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "postgre": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "refactoring": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "regressive": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "support": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    },
+    "zakazchik": {
+      "prev": {
+        "count": 0,
+        "hours": 0
+      },
+      "current": {
+        "count": 0,
+        "hours": 0
+      }
+    }
+  }
+}

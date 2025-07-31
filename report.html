@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Отчёт по ошибкам</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h1,
+    h2,
+    h3 {
+      color: #2c3e50;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin-bottom: 20px;
+      page-break-inside: avoid;
+    }
+
+    th,
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background-color: #2980b9;
+      color: white;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    button {
+      padding: 10px 15px;
+      background: #27ae60;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    button:hover {
+      background: #219150;
+    }
+
+    tr {
+      page-break-inside: avoid;
+    }
+
+    @media print {
+      #exportPDF {
+        display: none;
+      }
+    }
+
+    #toc {
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 1px solid #2980b9;
+      background-color: #ecf0f1;
+    }
+
+    #toc h2 {
+      margin-top: 0;
+    }
+
+    #toc ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    #toc ul li {
+      margin: 5px 0;
+    }
+
+    #toc ul ul {
+      margin-left: 20px;
+    }
+
+    #toc a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    #toc a:hover {
+      text-decoration: underline;
+    }
+
+    #categoryComparison {
+      margin-left: 20px;
+    }
+
+    /* Новые стили для PDF */
+    .pdf-section {
+      margin-bottom: 30px;
+    }
+
+    .pdf-link {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Отчёт по ошибкам — Сравнение кварталов</h1>
+
+  <nav id="toc">
+    <h2>Оглавление</h2>
+    <ul>
+      <li><a href="#summary" class="pdf-link" data-target="summary">Общее количество задач и часов</a></li>
+      <li><a href="#zakazchik" class="pdf-link" data-target="zakazchik">Задачи заказчиков (без [int] в теме)</a>
+        <ul>
+          <li><a href="#categoryComparison" class="pdf-link" data-target="categoryComparison">Сравнение по категориям
+              заказчиков</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+
+  <button id="exportPDF">Экспорт в PDF</button>
+
+  <section id="summary" class="pdf-section"></section>
+  <section id="zakazchik" class="pdf-section"></section>
+  <section id="categoryComparison" class="pdf-section"></section>
+
+  <!-- Используем jsPDF и html2canvas вместо html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <script>
+    // Загрузка отчёта из JSON (локально)
+    fetch('report.json')
+      .then(res => res.json())
+      .then(report => {
+        renderReport(report);
+      })
+      .catch(console.error);
+
+    function renderReport(report) {
+      // Сводка
+      const summary = report.total;
+      const summaryHTML = `
+        <h2 id="summary">Общее количество задач и часов</h2>
+        <table>
+          <thead><tr><th>Квартал</th><th>Количество задач</th><th>Трудозатраты (часов)</th></tr></thead>
+          <tbody>
+            <tr><td>Предыдущий квартал</td><td>${summary.prev.totalTasks}</td><td>${summary.prev.totalHours.toFixed(2)}</td></tr>
+            <tr><td>Текущий квартал</td><td>${summary.current.totalTasks}</td><td>${summary.current.totalHours.toFixed(2)}</td></tr>
+          </tbody>
+        </table>
+      `;
+      document.getElementById('summary').innerHTML = summaryHTML;
+
+      // Заказчики (задачи без [int])
+      const zakazchik = report.zakazchik;
+      const zakazchikHTML = `
+        <h2 id="zakazchik">Задачи заказчиков (без [int] в теме)</h2>
+        <table>
+          <thead><tr><th>Квартал</th><th>Количество задач</th><th>Трудозатраты (часов)</th></tr></thead>
+          <tbody>
+            <tr><td>Предыдущий квартал</td><td>${zakazchik.prev.totalTasks}</td><td>${zakazchik.prev.totalHours.toFixed(2)}</td></tr>
+            <tr><td>Текущий квартал</td><td>${zakazchik.current.totalTasks}</td><td>${zakazchik.current.totalHours.toFixed(2)}</td></tr>
+          </tbody>
+        </table>
+      `;
+      document.getElementById('zakazchik').innerHTML = zakazchikHTML;
+
+      // Сравнение по категориям
+      const catComp = report.categoryComparison;
+      let catRows = '';
+      Object.entries(catComp).forEach(([cat, data]) => {
+        catRows += `<tr>
+          <td>${cat}</td>
+          <td>${data.prev.count}</td>
+          <td>${data.prev.hours.toFixed(2)}</td>
+          <td>${data.current.count}</td>
+          <td>${data.current.hours.toFixed(2)}</td>
+        </tr>`;
+      });
+
+      const catHTML = `
+        <h3 id="categoryComparison">Сравнение по категориям заказчиков</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Категория</th>
+              <th>Кол-во задач (пред)</th>
+              <th>Трудозатраты (пред), ч</th>
+              <th>Кол-во задач (тек)</th>
+              <th>Трудозатраты (тек), ч</th>
+            </tr>
+          </thead>
+          <tbody>${catRows}</tbody>
+        </table>
+      `;
+      document.getElementById('categoryComparison').innerHTML = catHTML;
+    }
+
+    // Новая функция для экспорта в PDF с работающими ссылками
+    document.getElementById('exportPDF').addEventListener('click', async () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+
+      // Собираем информацию о разделах для ссылок
+      const sections = [
+        { id: 'summary', title: 'Общее количество задач и часов' },
+        { id: 'zakazchik', title: 'Задачи заказчиков' },
+        { id: 'categoryComparison', title: 'Сравнение по категориям' }
+      ];
+
+      // Получаем позиции всех разделов
+      const sectionPositions = {};
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          sectionPositions[section.id] = rect.top;
+        }
+      }
+
+      // Рендерим страницу в canvas
+      const canvas = await html2canvas(document.body, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight
+      });
+
+      // Добавляем изображение в PDF
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = doc.internal.pageSize.getWidth() - 20;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      doc.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+
+      // Добавляем внутренние ссылки
+      for (const section of sections) {
+        const position = sectionPositions[section.id];
+        if (position !== undefined) {
+          const pdfY = 10 + (position / canvas.height) * imgHeight;
+          if (pdfY < doc.internal.pageSize.getHeight()) {
+            doc.link(10, pdfY, imgWidth, 20, {
+              pageNumber: 1,
+              top: pdfY
+            });
+          }
+        }
+      }
+
+      // Добавляем закладки для навигации
+      const outline = doc.outline;
+      outline.root = outline.add(null, 'Оглавление', {});
+
+      for (const section of sections) {
+        const position = sectionPositions[section.id];
+        if (position !== undefined) {
+          const pdfY = 10 + (position / canvas.height) * imgHeight;
+          if (pdfY < doc.internal.pageSize.getHeight()) {
+            outline.add(null, section.title, {
+              pageNumber: 1,
+              top: pdfY
+            });
+          }
+        }
+      }
+
+      // Сохраняем PDF
+      doc.save('Отчет_по_ошибкам.pdf');
+    });
+  </script>
+</body>
+
+</html>
